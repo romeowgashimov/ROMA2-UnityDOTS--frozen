@@ -13,11 +13,6 @@ namespace ROMA2.Logic.Client.Models
     [UpdateInGroup(typeof(PresentationSystemGroup))]
     public partial struct OutlineSystem : ISystem
     {
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<NetworkId>();
-        }
-
         public void OnUpdate(ref SystemState state)
         {
             state.Dependency = new OutlineJob
@@ -33,7 +28,7 @@ namespace ROMA2.Logic.Client.Models
     [WithAll(typeof(GhostOwnerIsLocal))]
     public partial struct OutlineJob : IJobEntity
     {
-        private const float OUTLINE_WIDTH = 1.12F;
+        private const float OUTLINE_WIDTH = 0.04F;
         private static readonly Color OUTLINE_COLOR_RED = new(1f, 0.3f, 0.3f, 1f);
         private static readonly Color OUTLINE_COLOR_BLUE = new(0.3f, 0.7f, 1f, 1f);
         private static readonly Color OUTLINE_COLOR_DEFAULT = new(1f, 0.7f, 1f, 1f);
@@ -55,7 +50,7 @@ namespace ROMA2.Logic.Client.Models
                 outlinedEntity.Value = Null;
                 if (!OutlinedEntityLookup.HasComponent(outlined)) return;
                 Entity oldOutline = OutlinedEntityLookup[outlined].Value;
-                OutlineWidthLookup[oldOutline] = new() { Value = 1f };
+                OutlineWidthLookup[oldOutline] = new() { Value = 0f };
             }
             
             // Из-за долбанной логики рейкаста у меня всегда selected != Null B)

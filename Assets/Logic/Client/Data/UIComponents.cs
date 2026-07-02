@@ -1,4 +1,5 @@
 ﻿using ROMA2.Logic.Client.Controllers;
+using ROMA2.Logic.Data;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -113,5 +114,27 @@ namespace ROMA2.Logic.Client.Data
     public class ModelReference : ICleanupComponentData
     {
         public GameObject Value;
+    }
+
+    public class AnimatorReference : ICleanupComponentData
+    {
+        public Animator Value;
+    }
+
+    public struct CachedCharacterState : IComponentData
+    {
+        public CharacterState Value;
+    }
+
+    public struct PortraitProperties : IComponentData
+    {
+        public float DistanceOffset;
+        public float SizeOffset;
+        public float HeightOffset;
+    }
+    
+    public class OutlineControllerReference : IComponentData
+    {
+        public OutlineController Value;
     }
 }

@@ -2,14 +2,13 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 
 namespace ROMA2.Logic.Common.Combat
 {
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-    public partial struct InstBasicRangedAttackSystem : ISystem
+    public partial struct BasicMeleeAttackSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
         {
@@ -21,42 +20,34 @@ namespace ROMA2.Logic.Common.Combat
         public void OnUpdate(ref SystemState state)
         {
             NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-            EntityCommandBuffer.ParallelWriter ecb = SystemAPI
-                .GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
-                .CreateCommandBuffer(state.WorldUnmanaged)
-                .AsParallelWriter();
 
-            state.Dependency = new InstBasicRangedAttackJob
+            state.Dependency = new BasicMeleeAttackJob
             {
                 CurrentTick = networkTime.ServerTick,
-                TransformLookup = SystemAPI.GetComponentLookup<LocalTransform>(isReadOnly: true),
-                ECB = ecb
+                TransformLookup = SystemAPI.GetComponentLookup<LocalTransform>(isReadOnly: true)
             }.ScheduleParallel(state.Dependency);
         }
     }
 
     [BurstCompile]
-    [WithAll(typeof(Simulate), typeof(InAttackArea))]
-    public partial struct InstBasicRangedAttackJob : IJobEntity
+    [WithAll(typeof(Simulate), typeof(InAttackArea), typeof(MeleeAttack))]
+    public partial struct BasicMeleeAttackJob : IJobEntity
     {
         private const int SIMULATION_TICK_RATE = 60;
         
         [ReadOnly] public NetworkTick CurrentTick;
         [ReadOnly] public ComponentLookup<LocalTransform> TransformLookup;
 
-        public EntityCommandBuffer.ParallelWriter ECB;
-
         [BurstCompile]
         private void Execute(
-            [ChunkIndexInQuery] int sortKey,
             ref DynamicBuffer<AttackCooldown> attackCooldown,
-            in RangedAttackProperties rangedProperties,
             in TargetEntity targetEntity, 
-            Entity npcEntity,
+            Entity owner,
             in Team team,
             in AttackSpeed attackSpeed, 
             in PhysicalPower physicalPower,
-            ref AttackProperties properties)
+            ref AttackProperties properties,
+            ref DynamicBuffer<SendDamageElement> sendDamages)
         {
             if (!TransformLookup.HasComponent(targetEntity.Value)) return;
             if (!attackCooldown.GetDataAtTick(CurrentTick, out AttackCooldown cooldownExpirationTick))
@@ -66,20 +57,14 @@ namespace ROMA2.Logic.Common.Combat
                          || CurrentTick.IsNewerThan(cooldownExpirationTick.Value);
             if (!properties.CanAttack) return;
 
-            float3 spawnPosition = TransformLookup[npcEntity].Position + rangedProperties.FirePointOffset;
-            float3 targetPosition = TransformLookup[targetEntity.Value].Position;
-
-            Entity newAttack = ECB.Instantiate(sortKey, rangedProperties.AttackPrefab);
-            LocalTransform newAttackTransform = LocalTransform.FromPositionRotation(spawnPosition,
-                quaternion.LookRotationSafe(targetPosition - spawnPosition, math.up()));
+            int totalDamage = physicalPower.Value;
             
-            ECB.SetComponent(sortKey, newAttack, newAttackTransform);
-            ECB.SetComponent(sortKey, newAttack, team);
-            ECB.SetComponent(sortKey, newAttack, new BasicAttackTarget { Value = targetEntity.Value });
-            ECB.SetComponent(sortKey, newAttack, new Owner { Value = npcEntity });
-            ECB.SetComponent<CombineCharsComponent>(sortKey, newAttack, new()
+            sendDamages.Add(new()
             {
-                PhysicalPower = physicalPower.Value
+                PhysicalDamage = totalDamage,
+                Receiver = targetEntity.Value,
+                Owner = owner,
+                AbilityIndex = -1
             });
             
             NetworkTick newCooldownTick = CurrentTick;

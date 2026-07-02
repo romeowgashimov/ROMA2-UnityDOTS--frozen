@@ -118,12 +118,13 @@ namespace ROMA2.Logic.Common.Behaviour
             ref DynamicBuffer<PathPositionElement> pathPositions,
             ref FollowPathProperties pathProperties,
             in PhysicsVelocity velocity,
+            ref AttackProperties attackProperties,
             Entity owner)
         {
             if (target.Value == Entity.Null)
             {
                 inAttackArea.ValueRW = false;
-                target.InAttackArea = false;
+                attackProperties.CanAttack = false;
                 return;
             }
 
@@ -136,14 +137,12 @@ namespace ROMA2.Logic.Common.Behaviour
                     movePos.Value = targetPos;
                     needPath.ValueRW = true;
                     inAttackArea.ValueRW = false;
-                    target.InAttackArea = false;
                     lastPos.Value = targetPos;
                 }
             }
             else
             {
                 inAttackArea.ValueRW = true;
-                target.InAttackArea = true;
                 
                 // Остановка преследования и наведение, если дошёл до радиуса атаки
                 if (!pathPositions.IsEmpty) pathPositions.Clear();

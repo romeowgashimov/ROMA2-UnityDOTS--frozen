@@ -52,7 +52,7 @@ namespace ROMA2.Logic.Common.Bakers
                     });
                 }
             
-                AddComponent<TargetEntity>(entity, new() { InAttackArea = false });
+                AddComponent<AttackProperties>(entity);
                 AddBuffer<AttackCooldown>(entity); 
                 AddComponent(entity, new DetectionRadius { Value = authoring.DetectionRadius });
                 AddComponent<InAttackArea>(entity);

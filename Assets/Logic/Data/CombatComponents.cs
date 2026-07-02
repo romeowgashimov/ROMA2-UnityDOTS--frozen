@@ -156,7 +156,6 @@ namespace ROMA2.Logic.Data
     public struct TargetEntity : IComponentData
     {
         [GhostField] public Entity Value;
-        [GhostField] public bool InAttackArea;
     }
 
     public struct LastTargetEntityPosition : IComponentData
@@ -169,14 +168,20 @@ namespace ROMA2.Logic.Data
     public struct RangedAttackProperties : IComponentData
     {
         public float3 FirePointOffset;
-        public uint CooldownTickCount;
         public Entity AttackPrefab;
     }
+    
+    public struct MeleeAttack : IComponentData { }
 
     public struct AttackCooldown : ICommandData
     {
         public NetworkTick Tick { get; set; }
         public NetworkTick Value;
+    }
+
+    public struct AttackProperties : IComponentData
+    {
+        public bool CanAttack;
     }
 
     public struct GameOverOnDestroyTag : IComponentData { }

@@ -1,3 +1,4 @@
+using ROMA2.Logic.Client.Controllers;
 using ROMA2.Logic.Client.Data;
 using ROMA2.Logic.Data;
 using Unity.Entities;
@@ -41,8 +42,11 @@ namespace ROMA2.Logic.Client.Models
                 };
                 Color unityColor = new(teamColor.x, teamColor.y, teamColor.z, teamColor.w);
 
-                if (newModel.TryGetComponent<Renderer>(out var renderer)) 
+                if (newModel.TryGetComponent(out Renderer renderer)) 
                     renderer.material.color = unityColor; 
+                
+                if (newModel.TryGetComponent(out OutlineController outline))
+                    ecb.AddComponent(entity, new OutlineControllerReference { Value = outline });
                 
                 ecb.AddComponent<LastOutlinedEntity>(entity);
                 ecb.AddComponent(entity, new ModelReference { Value = newModel });

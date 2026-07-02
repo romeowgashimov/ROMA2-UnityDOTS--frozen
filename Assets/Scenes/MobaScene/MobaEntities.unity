@@ -2552,7 +2552,7 @@ MonoBehaviour:
     type: 3}
   Champion1Prefab: {fileID: 3209225278970780028, guid: c19aa2f3dc63d8447820c24e8d9605cd,
     type: 3}
-  Champion2Prefab: {fileID: 3209225278970780028, guid: c19aa2f3dc63d8447820c24e8d9605cd,
+  Champion2Prefab: {fileID: 319027181843791056, guid: f17022f02f55ab2438864b49b39a2928,
     type: 3}
 --- !u!4 &903932598
 Transform:
@@ -3857,7 +3857,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Logic.Server.GameStartPropertiesAuthoring
   MaxPlayersPerTeam: 5
   MinPlayersToStartGame: 1
-  CountdownTime: 0
+  CountdownTime: 1
   SpawnOffsets:
   - {x: 0, y: 0, z: 0}
   - {x: -2, y: 0, z: 2}

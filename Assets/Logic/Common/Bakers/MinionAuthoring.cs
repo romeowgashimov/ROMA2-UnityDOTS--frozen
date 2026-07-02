@@ -64,8 +64,13 @@ namespace ROMA2.Logic.Common.Bakers
                         FirePointOffset = authoring.FirePointOffset
                     });
                 }
+                else 
+                {
+                    AddComponent<MeleeAttack>(entity);
+                    AddBuffer<SendDamageElement>(entity);
+                }
             
-                AddComponent<TargetEntity>(entity, new() { InAttackArea = false });
+                AddComponent<TargetEntity>(entity);
                 AddBuffer<AttackCooldown>(entity); 
                 AddComponent(entity, new DetectionRadius { Value = authoring.DetectionRadius });
                 AddComponent<InAttackArea>(entity);
@@ -75,6 +80,9 @@ namespace ROMA2.Logic.Common.Bakers
                 SetComponentEnabled<ReAggrRequest>(entity, false);
                 
                 AddComponent<RVOAgent>(entity, new() { BodyRadius = authoring.RVORadius });
+                
+                AddComponent<GhostCharacterState>(entity);
+                AddComponent<AttackProperties>(entity);
             }
         }
     }
