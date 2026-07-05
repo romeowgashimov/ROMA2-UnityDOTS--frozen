@@ -27,8 +27,6 @@ namespace ROMA2.Logic.Common.Abilities
 
         public void OnUpdate(ref SystemState state)
         {
-            if (_query.CalculateEntityCount() == 0) return;
-            
             NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
             if (!networkTime.IsFirstTimeFullyPredictingTick) return;
             
@@ -57,8 +55,7 @@ namespace ROMA2.Logic.Common.Abilities
             DynamicBuffer<AbilityCooldownTargetTicks> cooldownTargetTicks,
             RefRW<ActivatedAbilitiesCommands> activatedAbilitiesCommands, 
             in CurrentMana currMana,
-            in AbilityManaCost manaCosts,
-            Entity owner)
+            in AbilityManaCost manaCosts)
         {
             for (int i = 0; i < input.Length; ++i)
             {
@@ -70,10 +67,8 @@ namespace ROMA2.Logic.Common.Abilities
                 Entity abilityCommandEntity = ECB.Instantiate(key, abilityCommand[i]);
                 ECB.SetComponent(key, abilityCommandEntity, new AbilityCommand
                 {
-                    Owner = owner, 
                     AbilityIndex = i, 
                     NeedToConfirmAbilities = input.NeedToConfirmAbilities,
-                    ManaCost = manaCost
                 });
                 activatedAbilitiesCommands.ValueRW[i] = true;
             }

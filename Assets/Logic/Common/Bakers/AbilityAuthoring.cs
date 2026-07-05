@@ -1,4 +1,5 @@
-﻿using ROMA2.Logic.Data;
+﻿using ROMA2.Logic.Common.Abilities;
+using ROMA2.Logic.Data;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;

@@ -116,16 +116,6 @@ namespace ROMA2.Logic.Data
         public int TrueDamage;
     }
 
-    public struct DeathShotAbility : IComponentData
-    {
-        public int PhysicalPercentage;
-    }
-
-    public struct DeathSphereAbility : IComponentData
-    {
-        public int MagicalPercentage;
-    }
-
     // Чтобы не лазить в лукапы сразу передаём всю инфу о владельце
     public struct CombineCharsComponent : IComponentData
     {

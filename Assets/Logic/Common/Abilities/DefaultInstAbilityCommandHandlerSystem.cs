@@ -41,22 +41,21 @@ namespace ROMA2.Logic.Common.Abilities
 
             bool isServer = state.WorldUnmanaged.IsServer();
             
-            foreach ((DefaultInstAbilityCommand anyCommand, AbilityCommand mainCommand,
+            foreach ((DefaultInstAbilityCommand anyCommand, AbilityCommand mainCommand, Owner owner,
                          Entity commandEntity) in SystemAPI
-                         .Query<DefaultInstAbilityCommand, AbilityCommand>()
+                         .Query<DefaultInstAbilityCommand, AbilityCommand, Owner>()
                          .WithAll<Simulate>()
                          .WithEntityAccess())
             {
                 // Если компонент уже есть на сущности, команда не приведёт к структурным изменениям
-                ECB.AddComponent(mainCommand.Owner, new DefaultInstAbilityCommand
+                ECB.AddComponent(owner.Value, new DefaultInstAbilityCommand
                 {
                     Prefab = anyCommand.Prefab,
                     AbilityIndex = mainCommand.AbilityIndex,
                     // Менять на глобальный конфиг настроек
-                    NeedToConfirmAbilities = mainCommand.NeedToConfirmAbilities ,
-                    ManaCost = mainCommand.ManaCost
+                    NeedToConfirmAbilities = mainCommand.NeedToConfirmAbilities
                 });
-                ECB.SetComponentEnabled<DefaultInstAbilityCommand>(mainCommand.Owner, true);
+                ECB.SetComponentEnabled<DefaultInstAbilityCommand>(owner.Value, true);
                 ECB.DestroyEntity(commandEntity);
             }
             
@@ -89,8 +88,10 @@ namespace ROMA2.Logic.Common.Abilities
             in PhysicalPower physicalPower, 
             in MagicalPower magicalPower,
             ref CurrentMana currMana,
+            in AbilityManaCost manaCosts,
             Entity owner)
         {
+            int abilityIndex = anyCommand.AbilityIndex;
             // Проверка, нужно ли подтверждать умение
             if (anyCommand.NeedToConfirmAbilities)
             {
@@ -99,7 +100,7 @@ namespace ROMA2.Logic.Common.Abilities
                     if (abilityInput.CancelAbility.IsSet) 
                     {
                         ECB.SetComponentEnabled<DefaultInstAbilityCommand>(key, owner, false);
-                        activatedAbilitiesCommands[anyCommand.AbilityIndex] = false;
+                        activatedAbilitiesCommands[abilityIndex] = false;
                     }
                     return;
                 }
@@ -117,21 +118,21 @@ namespace ROMA2.Logic.Common.Abilities
                 PhysicalPower = physicalPower.Value,
                 MagicalPower = magicalPower.Value
             });
-            ECB.SetComponent<AbilityIndex>(key, ability, new() { Value = anyCommand.AbilityIndex });
+            ECB.SetComponent<AbilityIndex>(key, ability, new() { Value = abilityIndex });
             
             // Выключение команды после инициализации
             ECB.SetComponentEnabled<DefaultInstAbilityCommand>(key, owner, false);
-            activatedAbilitiesCommands[anyCommand.AbilityIndex] = false;
+            activatedAbilitiesCommands[abilityIndex] = false;
 
             // Обновление перезарядки
             cooldownTargetTicks.UpdateCooldown(
                 abilityCooldownTicks, 
                 NetTime, 
-                anyCommand.AbilityIndex, 
+                abilityIndex, 
                 IsServer);
             
             // Уменьшение маны после применения
-            currMana.Value -= anyCommand.ManaCost;
+            currMana.Value -= manaCosts.GetManaCost(abilityIndex);
         }
     }
 }

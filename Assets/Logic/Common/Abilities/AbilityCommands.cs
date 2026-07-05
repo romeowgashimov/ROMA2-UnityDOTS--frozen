@@ -4,10 +4,9 @@ namespace ROMA2.Logic.Common.Abilities
 {
     public struct AbilityCommand : IComponentData
     {
-        public Entity Owner;
-        public bool NeedToConfirmAbilities;
         public int AbilityIndex;
-        public int ManaCost;
+        public bool IsFirstUse;
+        public bool NeedToConfirmAbilities;
     }
 
     public struct ActivatedAbilitiesCommands : IComponentData
@@ -56,9 +55,8 @@ namespace ROMA2.Logic.Common.Abilities
     
     public struct DefaultInstAbilityCommand : IComponentData, IEnableableComponent
     {
-        public bool NeedToConfirmAbilities;
-        public int AbilityIndex;
         public Entity Prefab;
-        public int ManaCost;
+        public int AbilityIndex;
+        public bool NeedToConfirmAbilities;
     }
 }

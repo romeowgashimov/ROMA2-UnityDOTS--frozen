@@ -301,14 +301,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7707155b1784fed9cd380edb53ef59b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Logic.Common.AoeAbilityAuthoring
-  Ability1: {fileID: 2008466357010077448, guid: 50c3fc595c12b7b4a9f26244ed6efd75,
+  Ability1: {fileID: 2008466357010077448, guid: 131e946018c97d143bda59d0ff0ca5ee,
     type: 3}
-  Ability2: {fileID: 2008466357010077448, guid: 89983fd094130ad44afa533d5820871c,
+  Ability2: {fileID: 2008466357010077448, guid: 50c3fc595c12b7b4a9f26244ed6efd75,
     type: 3}
-  Ability1Cooldown: 6
-  Ability2Cooldown: 3
-  Ability1ManaCost: 90
-  Ability2ManaCost: 50
+  Ability1Cooldown: 4
+  Ability2Cooldown: 2
+  Ability1ManaCost: 50
+  Ability2ManaCost: 10
   NetCodeConfig: {fileID: 11400000, guid: dce9a8c7da8b8cf4093e70364ed6f4c4, type: 2}
 --- !u!114 &7050860296828747596
 MonoBehaviour:
